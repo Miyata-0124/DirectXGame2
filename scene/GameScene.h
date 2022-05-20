@@ -10,6 +10,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#define PI 3.14
 
 /// <summary>
 /// ゲームシーン
@@ -41,6 +42,8 @@ class GameScene {
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	float Angle(float angle);
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;

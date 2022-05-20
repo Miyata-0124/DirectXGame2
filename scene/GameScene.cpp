@@ -11,6 +11,11 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 }
 
+float GameScene::Angle(float angle)
+{
+	return angle * PI / 180;
+}
+
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -32,6 +37,120 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	//ライン描画が参照するビュープロジェクションを指定(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
+	//x,y,z方向のスケーリング
+	worldTransform_.scale_ = { 5,5,5 };
+	//x,y,z軸の回転角設定
+	worldTransform_.rotation_ = { Angle(45.0) , Angle(45.0) , 0.0f};//z軸
+	//x,y,z軸の平行移動の設定
+	worldTransform_.translation_ = { 10,10,10 };
+
+	
+	//スケーリング行列を宣言
+	Matrix4 matScale;
+	/*
+		sx,0,0,0
+		0,sy,0,0
+		0,0,sz,0
+		0,0,0,1
+	*/
+	//スケーリング倍率を行列に設定する
+	matScale.m[0][0] = worldTransform_.scale_.x;//sx
+	matScale.m[1][1] = worldTransform_.scale_.y;//sy
+	matScale.m[2][2] = worldTransform_.scale_.z;//sz
+	matScale.m[3][3] = 1;
+	
+	
+	Matrix4 matIdentity;
+	/*
+		1,0,0,0
+		0,1,0,0
+		0,0,1,0
+		0,0,0,1
+	*/
+	matIdentity.m[0][0] = 1;
+	matIdentity.m[1][1] = 1;
+	matIdentity.m[2][2] = 1;
+	matIdentity.m[3][3] = 1;
+
+	//合成用回転行列を宣言
+	Matrix4 matRot;
+	//各軸用回転行列を宣言
+	Matrix4 matRotX, matRotY, matRotZ;
+	//z軸の回転行列宣言
+	matRotZ = matIdentity;
+	/*
+		cos,sin,0,0
+		-sin,cos,0,0
+		0,0,1,0
+		0,0,0,1
+	*/
+	matRotZ.m[0][0] = cos(worldTransform_.rotation_.z);
+	matRotZ.m[0][1] = sin(worldTransform_.rotation_.z);
+	matRotZ.m[1][0] = -sin(worldTransform_.rotation_.z);
+	matRotZ.m[1][1] = cos(worldTransform_.rotation_.z);
+	//x軸の回転行列宣言
+	matRotX = matIdentity;
+	/*
+		1,0,0,0
+		0,cos,sin,0
+		0,-sin,cos,0
+		0,0,0,1
+	*/
+	matRotX.m[1][1] = cos(worldTransform_.rotation_.x);
+	matRotX.m[1][2] = sin(worldTransform_.rotation_.x);
+	matRotX.m[2][1] = -sin(worldTransform_.rotation_.x);
+	matRotX.m[2][2] = cos(worldTransform_.rotation_.x);
+	//y軸の回転行列宣言
+	matRotY = matIdentity;
+	/*
+		cos,0,-sin,0
+		0,1,0,0
+		sin,0,cos,0
+		0,0,0,1
+	*/
+	matRotY.m[0][0] = cos(worldTransform_.rotation_.y);
+	matRotY.m[2][0] = sin(worldTransform_.rotation_.y);
+	matRotY.m[0][2] = -sin(worldTransform_.rotation_.y);
+	matRotY.m[2][2] = cos(worldTransform_.rotation_.y);
+
+	//格軸の回転行列を合成
+	matRot = matRotZ *= matRotX *= matRotY;
+	
+	
+	//worldTransform_.matWorld_ *= matRotZ;//回転
+	//worldTransform_.matWorld_ *= matRotX;
+	//worldTransform_.matWorld_ *= matRotY;
+
+	//平行移動行列を宣言
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+	//移動量を行列に設定する
+	//zの移動量設定
+	matTrans.m[0][2] = 0;
+	matTrans.m[1][2] = 0;
+	matTrans.m[3][2] = worldTransform_.translation_.z;
+	//xの移動量設定
+	matTrans.m[1][0] = 0;
+	matTrans.m[2][0] = 0;
+	matTrans.m[3][0] = worldTransform_.translation_.x;
+	//yの移動量設定
+	matTrans.m[0][1] = 0;
+	matTrans.m[2][1] = 0;
+	matTrans.m[3][1] = worldTransform_.translation_.y;
+	//行列[0][4]の設定
+	matTrans.m[0][3] = 0;
+	matTrans.m[1][3] = 0;
+	matTrans.m[2][3] = 0;
+	matTrans.m[3][3] = 1;
+
+	worldTransform_.matWorld_ = matIdentity;
+
+	//行列の合成
+	worldTransform_.matWorld_ *= matScale;	//大きさ
+	worldTransform_.matWorld_ *= matRot;	//角度
+	worldTransform_.matWorld_ *= matTrans;	//移動
+
+	//行列の転送
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
@@ -71,16 +190,10 @@ void GameScene::Draw() {
 	Model::PostDraw();
 	//Y軸
 	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,10,0 }, { 0,1,0,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 3,0,0 }, { 3,10,0 }, { 0,1,0,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 6,0,0 }, { 6,10,0 }, { 0,1,0,1 });
 	//X軸
 	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 10,0,0 }, { 1,0,0,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,3,0 }, { 10,3,0 }, { 1,0,0,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,6,0 }, { 10,6,0 }, { 1,0,0,1 });
 	//Z軸
 	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,0,10 }, { 0,0,1,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 3,0,0 }, { 3,0,10 }, { 0,0,1,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 6,0,0 }, { 6,0,10 }, { 0,0,1,1 });
 #pragma endregion
 
 #pragma region 前景スプライト描画
