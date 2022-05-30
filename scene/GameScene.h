@@ -45,9 +45,24 @@ class GameScene {
 
 	float Angle(float angle);
 
-	float MinNum(float num, float num2);
-	float MaxNum(float num, float num2);
+	/*float MinNum(float num, float num2);
+	float MaxNum(float num, float num2);*/
 
+	//パーツID
+	enum PartId
+	{
+		kRoot,	//大元
+		kSpine, //脊髄
+		kChest, //胸
+		kHead,	//頭
+		kArmL,	//左腕
+		kArmR,	//右腕
+		kHip,	//尻
+		kLegL,	//左足
+		kLegR,	//右足
+
+		kNumPartId
+	};
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
