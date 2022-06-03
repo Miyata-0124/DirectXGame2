@@ -68,59 +68,36 @@ Matrix4 Identity()
 	return matIdentity;
 }
 //回転行列
-Matrix4 RotX(Vector3 worldTransform_)
+Matrix4 Rot(Vector3 worldTransform_)
 {
 	//各軸用回転行列を宣言
+	Matrix4 matRot;
 	Matrix4 matRotX;
+	Matrix4 matRotY;
+	Matrix4 matRotZ;
 	//x軸の回転行列宣言
 	matRotX = Identity();
-	/*
-		1,0,0,0
-		0,cos,sin,0
-		0,-sin,cos,0
-		0,0,0,1
-	*/
+	//y軸の回転行列宣言
+	matRotY = Identity();
+	//z軸の回転行列宣言
+	matRotZ = Identity();
+	//x
 	matRotX.m[1][1] = cos(worldTransform_.x);
 	matRotX.m[1][2] = sin(worldTransform_.x);
 	matRotX.m[2][1] = -sin(worldTransform_.x);
 	matRotX.m[2][2] = cos(worldTransform_.x);
-	return matRotX;
-}
-Matrix4 RotY(Vector3 worldTransform_)
-{
-	//y軸の回転行列宣言
-	Matrix4 matRotY;
-	matRotY = Identity();
-	/*
-		cos,0,-sin,0
-		0,1,0,0
-		sin,0,cos,0
-		0,0,0,1
-	*/
+	//y
 	matRotY.m[0][0] = cos(worldTransform_.y);
 	matRotY.m[2][0] = sin(worldTransform_.y);
 	matRotY.m[0][2] = -sin(worldTransform_.y);
 	matRotY.m[2][2] = cos(worldTransform_.y);
-	return matRotY;
-}
-Matrix4 RotZ(Vector3 worldTransform_)
-{
-	Matrix4 matRotZ;
-	//z軸の回転行列宣言
-	matRotZ = Identity();
-	/*
-		cos,sin,0,0
-		-sin,cos,0,0
-		0,0,1,0
-		0,0,0,1
-	*/
+	//z
 	matRotZ.m[0][0] = cos(worldTransform_.z);
 	matRotZ.m[0][1] = sin(worldTransform_.z);
 	matRotZ.m[1][0] = -sin(worldTransform_.z);
 	matRotZ.m[1][1] = cos(worldTransform_.z);
-	return matRotZ;
+	return matRot = matRotZ *= matRotX *= matRotY;
 }
-
 //スケール行列
 Matrix4 Scale(Vector3 worldTransform_)
 {
@@ -200,13 +177,14 @@ void GameScene::Initialize() {
 		worldTransforms_[PartId::kRoot].Initialize();
 		//脊髄(1)
 		worldTransforms_[PartId::kSpine].Initialize();
-		worldTransforms_[PartId::kSpine].translation_ = { 0,4.5f,0 };
+		worldTransforms_[PartId::kSpine].translation_ = { 0,2.5f,0 };
 		worldTransforms_[PartId::kSpine].parent_ = &worldTransforms_[PartId::kRoot];
 
-		//上半身
+#pragma region 上半身
+		//胸
 		worldTransforms_[PartId::kChest].Initialize(); // チェストの初期化
 		worldTransforms_[PartId::kChest].parent_ = &worldTransforms_[PartId::kSpine]; // 脊髄の子
-		worldTransforms_[PartId::kChest].translation_ = { 0,2.5f,0 }; // チェストのローカル座標
+		worldTransforms_[PartId::kChest].translation_ = { 0,0,0 }; // チェストのローカル座標
 		//頭
 		worldTransforms_[PartId::kHead].Initialize(); // ヘッドの初期化
 		worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kChest]; // チェストの子
@@ -214,24 +192,29 @@ void GameScene::Initialize() {
 		//左腕
 		worldTransforms_[PartId::kArmL].Initialize(); //左腕の初期化
 		worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kChest]; // チェストの子
-		worldTransforms_[PartId::kArmL].translation_ = { -2.5f,2.5f,0 }; // 左腕のローカル座標
+		worldTransforms_[PartId::kArmL].translation_ = { -2.5f,0,0 }; // 左腕のローカル座標
 		//右腕
 		worldTransforms_[PartId::kArmR].Initialize(); //右腕の初期化
 		worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kChest]; //チェストの子
-		worldTransforms_[PartId::kArmR].translation_ = { 2.5f,2.5f,0 }; // 右腕のローカルチェスト
-
-		//下半身
+		worldTransforms_[PartId::kArmR].translation_ = { 2.5f,0,0 }; // 右腕のローカルチェスト
+#pragma endregion
+		
+#pragma region 下半身
+		//尻
 		worldTransforms_[PartId::kHip].Initialize(); // 尻の初期化
-		worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kSpine]; //脊髄の子
-		worldTransforms_[PartId::kHip].translation_ = { 0,-6.5f,0 }; // 尻のローカル座標
+		worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kRoot]; //脊髄の子
+		worldTransforms_[PartId::kHip].translation_ = { 0,0,0 }; // 尻のローカル座標
 		//左足
 		worldTransforms_[PartId::kLegL].Initialize(); // 左足の初期化
 		worldTransforms_[PartId::kLegL].parent_ = &worldTransforms_[PartId::kHip]; // 尻の子
-		worldTransforms_[PartId::kLegL].translation_ = { -2.5f,2.5f,0 }; // 左足のローカル座標
+		worldTransforms_[PartId::kLegL].translation_ = { -2.5f,-2.5f,0 }; // 左足のローカル座標
 		//右足
 		worldTransforms_[PartId::kLegR].Initialize(); // 右足の初期化
 		worldTransforms_[PartId::kLegR].parent_ = &worldTransforms_[PartId::kHip]; // 尻の子
-		worldTransforms_[PartId::kLegR].translation_ = { 2.5f,2.5f,0 }; // 右足のローカル座標
+		worldTransforms_[PartId::kLegR].translation_ = { 2.5f,-2.5f,0 }; // 右足のローカル座標
+#pragma endregion
+
+		
 		//カメラ垂直方向視野角を設定
 		viewProjection_.fovAngleY = Angle(20.0f);
 #pragma region アスペクト比ニアファ
@@ -277,6 +260,7 @@ void GameScene::Update() {
 	//キャラクタの移動ベクトル
 	Vector3 move1 = { 0,0,0 };
 	const float speed = 0.5f;
+	const float rotSpeed = 0.01f;
 	//視点の移動速度
 	const float kEyeSpeed = 0.01f;
 	//上キーで視野角が上がる
@@ -304,14 +288,34 @@ void GameScene::Update() {
 
 	//親の行列計算
 	worldTransforms_[0].matWorld_ = Transform(worldTransforms_[0].translation_);
-	//子の行列計算
-	worldTransforms_[1].matWorld_ = Transform(worldTransforms_[1].translation_);
-
-	worldTransforms_[1].matWorld_ *= Transform(worldTransforms_[0].translation_);
 	//親の行列転送
 	worldTransforms_[0].TransferMatrix();
-	//子の行列転送
-	worldTransforms_[1].TransferMatrix();
+	////子達の行列転送と計算
+	for (int i = 0; i < kNumPartId; i++)
+	{
+		worldTransforms_[i].matWorld_ = Transform(worldTransforms_[i].translation_);
+		worldTransforms_[i].matWorld_ *= Rot(worldTransforms_[i].rotation_);
+		worldTransforms_[i].matWorld_ *= Scale(worldTransforms_[i].scale_);
+		if (worldTransforms_[i].parent_ != nullptr)
+		{
+			worldTransforms_[i].matWorld_ *= worldTransforms_[i].parent_->matWorld_;
+		}
+		worldTransforms_[i].TransferMatrix();
+	}
+
+	//上半身回転処理
+	if (input_->PushKey(DIK_U)) {
+		worldTransforms_[PartId::kChest].rotation_.y -= rotSpeed;
+	}
+	else if (input_->PushKey(DIK_I)) {
+		worldTransforms_[PartId::kChest].rotation_.y += rotSpeed;
+	}
+	if (input_->PushKey(DIK_J)) {
+		worldTransforms_[PartId::kHip].rotation_.y -= rotSpeed;
+	}
+	else if (input_->PushKey(DIK_K)) {
+		worldTransforms_[PartId::kHip].rotation_.y += rotSpeed;
+	}
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
 	//if (input_->PushKey(DIK_W)) {
@@ -390,10 +394,13 @@ void GameScene::Draw() {
 	//{
 	//	model_->Draw(worldTransform_, viewProjection_/*debugCamera_->GetViewProjection()*/, textureHandle_);
 	//}
-	model_->Draw(worldTransforms_[0], viewProjection_, textureHandle_);
+	/*model_->Draw(worldTransforms_[0], viewProjection_, textureHandle_);
 	model_->Draw(worldTransforms_[1], viewProjection_, textureHandle_);
-	
-
+	*/
+	for (int i = 0; i < kNumPartId; i++)
+	{
+		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 	//Y軸
