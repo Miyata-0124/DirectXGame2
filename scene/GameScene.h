@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "Player.h"
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "DebugText.h"
@@ -72,13 +72,14 @@ class GameScene {
 	uint32_t textureHandle_ = 0;
 	//3Dモデル
 	Model* model_ = nullptr;
+	Player* player_ = nullptr;
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[100];
+	
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 	//デバッグカメラ
-	DebugCamera* debugCamera_ = nullptr;
-	float viewAngle = 0.0f;
+	/*DebugCamera* debugCamera_ = nullptr;
+	float viewAngle = 0.0f;*/
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
