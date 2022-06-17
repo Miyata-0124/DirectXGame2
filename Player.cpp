@@ -17,9 +17,47 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update()
 {
+	Translation();
+	Rotation();
+	Attack();
+	if (bullet_) {
+		bullet_->Update();
+	}
+	//s—ñŒvŽZ
+	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
+	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
+	worldTransform_.matWorld_ *= Transform(worldTransform_.translation_);
+	
+	//s—ñ‚ÌÄŒvŽZ(XV)
+	worldTransform_.TransferMatrix();
+
+	debugText_->SetPos(50, 50);
+	debugText_->Printf("Player:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("Rotation:(%f,%f,%f)", worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z);
+}
+
+void Player::Rotation()
+{
+	const float rotSpeed = 0.05f;
+
+	//ƒLƒƒƒ‰‚Ì‰ñ“]
+	if (input_->PushKey(DIK_E)) {
+		worldTransform_.rotation_.y += rotSpeed;
+	}
+	else if (input_->PushKey(DIK_Q)) {
+		worldTransform_.rotation_.y -= rotSpeed;
+	}
+
+}
+
+void Player::Translation()
+{
+
 	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®ƒxƒNƒgƒ‹
 	Vector3 move = { 0,0,0 };
-	const float playerSpeed = 0.5f;
+	const float playerSpeed = 0.15f;
+
 	//ˆÚ“®ŒÀŠE
 	const float moveLimitX = 13.0f;
 	const float moveLimitY = 7.0f;
@@ -39,21 +77,33 @@ void Player::Update()
 
 	//‰ÁŽZ
 	worldTransform_.translation_ += move;
+
+	//ˆÚ“®§ŒÀ
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -moveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +moveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -moveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +moveLimitY);
-	//s—ñŒvŽZ
-	worldTransform_.matWorld_ = Transform(worldTransform_.translation_);
-	
-	//s—ñ‚ÌÄŒvŽZ(XV)
-	worldTransform_.TransferMatrix();
+}
 
-	debugText_->SetPos(50, 50);
-	debugText_->Printf("Player:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
+void Player::Attack()
+{
+	if (input_->PushKey(DIK_SPACE)) {
+
+		//’e‚ð¶¬,‰Šú‰»
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		//’e‚ð“o˜^
+		bullet_ = newBullet;
+	}
 }
 
 void Player::Draw(ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	//’e‚Ì•`‰æ
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
 }

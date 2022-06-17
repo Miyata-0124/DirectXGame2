@@ -19,24 +19,6 @@ float GameScene::Angle(float angle)
 }
 
 //clamp関数
-//float GameScene::MinNum(float num, float num2)
-//{
-//	if (num < num2)
-//	{
-//		return num;
-//	}
-//	return num2;
-//}
-//
-//float GameScene::MaxNum(float num, float num2)
-//{
-//	if (num > num2)
-//	{
-//		return num;
-//	}
-//	return num2;
-//}
-
 float Clamp(float min, float max, float num)
 {
 	
@@ -121,37 +103,9 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
 	player_->Update();
 	/*debugCamera_->Update();*/
-	//視点の移動ベクトル
-	Vector3 move = { 0,0,0 };
-	//キャラクタの移動ベクトル
-	Vector3 move1 = { 0,0,0 };
-	const float speed = 0.5f;
-	const float rotSpeed = 0.01f;
-	//視点の移動速度
-	const float kEyeSpeed = 0.01f;
-	//上キーで視野角が上がる
-	if (input_->PushKey(DIK_UP)) {
-		/*viewProjection_.fovAngleY += kEyeSpeed;*/
-		//ニアクリップ増
-		/*viewProjection_.nearZ++;*/
-	}
-	//下キーで視野角が狭まる
-	else if (input_->PushKey(DIK_DOWN)) {
-		/*viewProjection_.fovAngleY -= kEyeSpeed;*/
-		//ニアクリップ減
-		/*viewProjection_.nearZ--;*/
-	}
-	viewProjection_.fovAngleY = Clamp(0.0f, PI, viewProjection_.fovAngleY);
-	//キャラの移動変化
-	if (input_->PushKey(DIK_LEFT)) {
-		move1.x-=speed;
-	}
-	else if (input_->PushKey(DIK_RIGHT)) {
-		move1.x+=speed;
-	}
-	
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
 	//if (input_->PushKey(DIK_W)) {
@@ -185,16 +139,7 @@ void GameScene::Update() {
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
 	//デバッグ用表示
-	/*debugText_->SetPos(50, 50);
-	debugText_->Printf("eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
-	debugText_->SetPos(50, 90);
-	debugText_->Printf("up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
-	debugText_->SetPos(50, 110);
-	debugText_->Printf("forAngleY(Degree):%f", (180/PI)*viewProjection_.fovAngleY);
-	debugText_->SetPos(50, 130);
-	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);*/
+
 }
 
 void GameScene::Draw() {
@@ -224,16 +169,11 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3Dモデル描画
-	//for (WorldTransform& worldTransform_ : worldTransforms_)
-	//{
-	//	model_->Draw(worldTransform_, viewProjection_/*debugCamera_->GetViewProjection()*/, textureHandle_);
-	//}
-	/*model_->Draw(worldTransforms_[0], viewProjection_, textureHandle_);
-	model_->Draw(worldTransforms_[1], viewProjection_, textureHandle_);
-	*/
 	
-	// 3Dオブジェクト描画後処理
 	player_->Draw(viewProjection_);
+
+	// 3Dオブジェクト描画後処理
+	
 
 	Model::PostDraw();
 	

@@ -5,6 +5,7 @@
 #include "DebugText.h"
 #include "ViewProjection.h"
 #include <cassert>
+#include "PlayerBullet.h"
 
 
 /// <summary>
@@ -24,9 +25,25 @@ public:
 	void Update();
 
 	/// <summary>
+	/// 回転処理
+	/// </summary>
+	void Rotation();
+
+	/// <summary>
+	/// 移動処理
+	/// </summary>
+	void Translation();
+
+	/// <summary>
+	/// 攻撃
+	/// </summary>
+	void Attack();
+	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
+
+	PlayerBullet* bullet_ = nullptr;
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -39,5 +56,7 @@ private:
 	DebugText *debugText_ = nullptr;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	
 };
 
