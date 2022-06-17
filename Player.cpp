@@ -17,11 +17,15 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update()
 {
+	//ù‰ñˆ—
 	Translation();
+	//ˆÚ“®ˆ—
 	Rotation();
+	//UŒ‚ˆ—
 	Attack();
-	if (bullet_) {
-		bullet_->Update();
+	//’eXV
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Update();
 	}
 	//s—ñŒvZ
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
@@ -90,11 +94,11 @@ void Player::Attack()
 	if (input_->PushKey(DIK_SPACE)) {
 
 		//’e‚ğ¶¬,‰Šú‰»
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(model_, worldTransform_.translation_);
 
 		//’e‚ğ“o˜^
-		bullet_ = newBullet;
+		bullets_.push_back(std::move(newBullet));
 	}
 }
 
@@ -103,7 +107,7 @@ void Player::Draw(ViewProjection& viewProjection)
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	//’e‚Ì•`‰æ
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }

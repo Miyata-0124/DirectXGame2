@@ -6,6 +6,8 @@
 #include "ViewProjection.h"
 #include <cassert>
 #include "PlayerBullet.h"
+#include <memory>
+#include <list>
 
 
 /// <summary>
@@ -43,7 +45,8 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
-	PlayerBullet* bullet_ = nullptr;
+	//弾
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
