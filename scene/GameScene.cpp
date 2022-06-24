@@ -11,6 +11,7 @@ GameScene::~GameScene() {
 	delete model_;
 	/*delete debugCamera_;*/
 	delete player_;
+	delete enemy_;
 }
 
 float GameScene::Angle(float angle)
@@ -41,11 +42,15 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
 	textureHandle_ = TextureManager::Load("mario.jpg");
+	enemyHandle_ = TextureManager::Load("A.jpg");
 	//3Dモデルの生成
 	model_ = Model::Create();
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
+	//敵キャラ生成
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_, enemyHandle_);
 	//乱数シード生成器
 	std::random_device seed_gen;
 	//メルセンヌ・ツイスターの乱数エンジン
@@ -105,6 +110,7 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player_->Update();
+	enemy_->Update();
 	/*debugCamera_->Update();*/
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
@@ -170,8 +176,8 @@ void GameScene::Draw() {
 	/// </summary>
 	//3Dモデル描画
 	
+	enemy_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
-
 	// 3Dオブジェクト描画後処理
 	
 

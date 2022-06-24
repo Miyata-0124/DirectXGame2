@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Player.h"
+#include "Enemy.h"
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "DebugText.h"
@@ -70,9 +71,11 @@ class GameScene {
 	DebugText* debugText_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
+	uint32_t enemyHandle_ = 0;
 	//3Dモデル
 	Model* model_ = nullptr;
 	Player* player_ = nullptr;
+	Enemy* enemy_ = nullptr;
 	//ワールドトランスフォーム
 	
 	//ビュープロジェクション

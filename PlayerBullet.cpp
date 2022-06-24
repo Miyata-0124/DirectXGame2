@@ -20,7 +20,7 @@ void PlayerBullet::Update()
 {
 	worldTransform_.translation_ += velocity_;
 
-	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
+	worldTransform_.matWorld_  = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
 	worldTransform_.matWorld_ *= Transform(worldTransform_.translation_);
 
