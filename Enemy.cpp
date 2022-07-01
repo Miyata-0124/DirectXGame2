@@ -9,12 +9,17 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle)
 	model_ = model;
 	textureHandle_ = textureHandle;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,20 };
+	worldTransform_.translation_ = { 5,0,20 };
+	Fire();
 }
 
 void Enemy::Update()
 {
 	Translation();
+	//’eXV
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
 	//s—ñŒvZ
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
@@ -32,6 +37,7 @@ void Enemy::Update()
 		Leave();
 		break;
 	}
+	
 }
 
 void Enemy::Translation()
@@ -46,6 +52,11 @@ void Enemy::Translation()
 void Enemy::Draw(ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	//’e‚Ì•`‰æ
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
 }
 
 void Enemy::Approach()
@@ -63,3 +74,21 @@ void Enemy::Leave()
 	//ˆÚ“®
 	worldTransform_.translation_ += leSpeed;
 }
+
+void Enemy::Fire()
+{
+	// ’e‚Ì‘¬“x
+	const float kBulletSpeed = 1.0f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+
+	// ‘¬“xƒxƒNƒgƒ‹‚ğ©‹@‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]‚³‚¹‚é
+	velocity = BulletRot(velocity, worldTransform_.matWorld_);
+	//’e‚ğ¶¬,‰Šú‰»
+	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	// ’e‚ğ“o˜^
+	bullets_.push_back(std::move(newBullet));
+}
+
+
