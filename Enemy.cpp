@@ -22,6 +22,16 @@ void Enemy::Update()
 
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
+	switch (phase_)
+	{
+	case Phase::Approach:
+	default:
+		Approach();
+		break;
+	case Phase::Leave:
+		Leave();
+		break;
+	}
 }
 
 void Enemy::Translation()
@@ -36,4 +46,20 @@ void Enemy::Translation()
 void Enemy::Draw(ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}
+
+void Enemy::Approach()
+{
+	//移動
+	worldTransform_.translation_ += apSpeed;
+	//規定値の位置に到着したら削除
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::Leave()
+{
+	//移動
+	worldTransform_.translation_ += leSpeed;
 }

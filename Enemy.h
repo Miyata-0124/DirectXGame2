@@ -3,6 +3,11 @@
 #include "Model.h"
 #include "ViewProjection.h"
 
+enum class Phase {
+	Approach, //接近
+	Leave,	  //離脱
+};
+
 class Enemy
 {
 public:
@@ -25,6 +30,10 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void Approach();
+	void Leave();
+	//フェーズ
+	Phase phase_ = Phase::Approach;
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -32,4 +41,7 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+
+	Vector3 apSpeed = { 0,0,-1.0f };
+	Vector3 leSpeed = { -0.1f,0.1f,-0.5f };
 };
