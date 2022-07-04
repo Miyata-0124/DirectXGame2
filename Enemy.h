@@ -3,6 +3,9 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "EnemyBullet.h"
+#include <memory>
+#include <list>
+
 
 enum class Phase {
 	Approach, //接近
@@ -32,6 +35,7 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 	void Approach();
+	void AppInitialize();
 	void Leave();
 
 	/// <summary>
@@ -43,6 +47,9 @@ public:
 
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+
+	//発射間隔
+	static const int kFireInterval = 30;
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -54,4 +61,7 @@ private:
 
 	Vector3 apSpeed = { 0,0,-0.01f };
 	Vector3 leSpeed = { 0.0f,0.0f,-0.01f };
+
+	int32_t bulletTimer = 0;
+
 };

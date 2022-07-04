@@ -2,6 +2,7 @@
 #include "MyMatrix.h"
 #include <cassert>
 
+
 void Enemy::Initialize(Model* model, uint32_t textureHandle)
 {
 	//NULLポインタチェック
@@ -9,12 +10,30 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle)
 	model_ = model;
 	textureHandle_ = textureHandle;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 5,0,20 };
-	Fire();
+	worldTransform_.translation_ = { 5,0,40 };
+
+	AppInitialize();
 }
 
 void Enemy::Update()
 {
+
+	switch (phase_)
+	{
+	case Phase::Approach:
+	default:
+		Approach();
+		break;
+	case Phase::Leave:
+		Leave();
+		break;
+	}
+
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+	});
+
 	Translation();
 	//弾更新
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
@@ -27,23 +46,13 @@ void Enemy::Update()
 
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
-	switch (phase_)
-	{
-	case Phase::Approach:
-	default:
-		Approach();
-		break;
-	case Phase::Leave:
-		Leave();
-		break;
-	}
-	
+
 }
 
 void Enemy::Translation()
 {
 	Vector3 move = { 0,0,0 };
-	const float speed = 0.5f;
+	const float speed = 0.05f;
 
 	move.z -= speed;
 	worldTransform_.translation_ += move;
@@ -67,6 +76,21 @@ void Enemy::Approach()
 	if (worldTransform_.translation_.z < 0.0f) {
 		phase_ = Phase::Leave;
 	}
+	
+	//発射タイマーをデクリメント
+	bulletTimer--;
+	//指定時間に達したら
+	if (bulletTimer <= 0) {
+		//弾発射
+		Fire();
+		//発射タイマーを初期化
+		bulletTimer = kFireInterval;
+	}
+}
+
+void Enemy::AppInitialize()
+{
+	bulletTimer = kFireInterval;
 }
 
 void Enemy::Leave()
@@ -78,7 +102,7 @@ void Enemy::Leave()
 void Enemy::Fire()
 {
 	// 弾の速度
-	const float kBulletSpeed = 1.0f;
+	const float kBulletSpeed = 0.08f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
 	// 速度ベクトルを自機の向きに合わせて回転させる
@@ -90,5 +114,6 @@ void Enemy::Fire()
 	// 弾を登録
 	bullets_.push_back(std::move(newBullet));
 }
+	
 
 

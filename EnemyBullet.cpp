@@ -18,7 +18,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 
 void EnemyBullet::Update()
 {
-	worldTransform_.translation_ += -velocity_;
+	worldTransform_.translation_ -= velocity_;
 
 	worldTransform_.matWorld_  = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
@@ -32,7 +32,7 @@ void EnemyBullet::Update()
 	{
 		isDead_ = true;
 	}
-
+	
 }
 
 void EnemyBullet::Draw(const ViewProjection& viewProjection)
