@@ -129,3 +129,10 @@ float Length(Vector3 vector)
 {
 	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 }
+
+Vector3 Vectornorm(Vector3 vec1, Vector3 vec2)
+{
+	Vector3 vecPos = vec1 -= vec2;
+
+	return vecPos;
+}

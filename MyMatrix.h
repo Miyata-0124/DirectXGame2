@@ -23,4 +23,4 @@ Vector3 Normalize(Vector3 vector);
 //’·‚³
 float Length(Vector3 vector);
 
-Vector3 Vector
+Vector3 Vectornorm(Vector3 vec1, Vector3 vec2);

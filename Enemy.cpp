@@ -112,11 +112,9 @@ void Enemy::Fire()
 
 	Vector3 playerPos = player_->GetWorldPosition();
 	Vector3 enemyPos = GetWorldPosition();
-
-	Vector3 vecPos = enemyPos -= playerPos;
-	velocity  = Normalize(vecPos);
+	Vector3 vecPos = Vectornorm(enemyPos, playerPos);
+	velocity = Normalize(vecPos);
 	vecPos *= kBulletSpeed;
-
 	//íeÇê∂ê¨,èâä˙âª
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
