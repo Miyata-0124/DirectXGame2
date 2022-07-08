@@ -22,3 +22,5 @@ Vector3 Normalize(Vector3 vector);
 
 //’·‚³
 float Length(Vector3 vector);
+
+Vector3 Vector
