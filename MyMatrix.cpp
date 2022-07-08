@@ -114,3 +114,18 @@ Vector3 BulletRot(Vector3 velocity, Matrix4 transform)
 
 	return bulletMath;
 }
+
+Vector3 Normalize(Vector3 vector)
+{
+	float len = Length(vector);
+	if (len != 0)
+	{
+		return vector /= len;
+	}
+	return vector;
+}
+
+float Length(Vector3 vector)
+{
+	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+}

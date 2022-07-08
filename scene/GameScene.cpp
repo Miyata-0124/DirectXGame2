@@ -48,9 +48,11 @@ void GameScene::Initialize() {
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
+	
 	//敵キャラ生成
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, enemyHandle_);
+	enemy_->SetPlayer(player_);
 	//乱数シード生成器
 	std::random_device seed_gen;
 	//メルセンヌ・ツイスターの乱数エンジン
