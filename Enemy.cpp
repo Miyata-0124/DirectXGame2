@@ -123,6 +123,10 @@ void Enemy::Fire()
 	bullets_.push_back(std::move(newBullet));
 }
 
+void Enemy::OnCollision()
+{
+}
+
 Vector3 Enemy::GetWorldPosition()
 {
 	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
@@ -134,6 +138,13 @@ Vector3 Enemy::GetWorldPosition()
 
 	return worldPos;
 }
+
+float Enemy::GetRadius()
+{
+	return radius_;
+}
+
+
 	
 
 

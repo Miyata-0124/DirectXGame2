@@ -11,6 +11,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "MyMatrix.h"
 #define PI 3.14
 
 /// <summary>
@@ -43,6 +44,11 @@ class GameScene {
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollisions();
 
 	float Angle(float angle);
 

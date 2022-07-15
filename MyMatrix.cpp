@@ -124,7 +124,7 @@ Vector3 Normalize(Vector3 vector)
 	}
 	return vector;
 }
-
+//ãóó£.ê≥ãKâª
 float Length(Vector3 vector)
 {
 	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);

@@ -8,10 +8,6 @@
 
 //自機クラスの前方宣言
 class Player;
-enum class Phase {
-	Approach, //接近
-	Leave,	  //離脱
-};
 
 class Enemy
 {
@@ -45,18 +41,22 @@ public:
 	/// </summary>
 	void Fire();
 
-	
-	//フェーズ
-	Phase phase_ = Phase::Approach;
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
 
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
 
 	//発射間隔
 	static const int kFireInterval = 30;
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	float GetRadius();
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -71,4 +71,13 @@ private:
 	Vector3 leSpeed = { 0.0f,0.0f,-0.01f };
 
 	int32_t bulletTimer = 0;
+
+	//半径
+	const float radius_ = 1.0f;
+	enum class Phase {
+		Approach, //接近
+		Leave,	  //離脱
+	};
+	//フェーズ
+	Phase phase_ = Phase::Approach;
 };

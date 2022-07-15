@@ -14,6 +14,73 @@ GameScene::~GameScene() {
 	delete enemy_;
 }
 
+void GameScene::CheckAllCollisions()
+{
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+	
+	//自弾リストの取得
+	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+	//敵弾リストの取得
+	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
+#pragma region 自キャラと敵弾の当たり判定
+	posA = player_->GetWorldPosition();
+	
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPosition();
+		Vector3 len = Vectornorm(posA, posB);
+		float dis = Length(len);
+		float radius = player_->GetRadius()+bullet->GetRadius();
+		if (dis<=radius)
+		{
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	posA = enemy_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPosition();
+		Vector3 len = Vectornorm(posA, posB);
+		float dis = Length(len);
+		float radius = enemy_->GetRadius() + bullet->GetRadius();
+		if (dis <= radius)
+		{
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet1 : enemyBullets) {
+		posA = bullet1->GetWorldPosition();
+
+		for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+			//自弾の座標
+			posB = bullet->GetWorldPosition();
+			Vector3 len = Vectornorm(posA, posB);
+			float dis = Length(len);
+			float radius = enemy_->GetRadius() + bullet->GetRadius();
+			if (dis <= radius)
+			{
+				bullet1->OnCollision();
+				bullet->OnCollision();
+			}
+		}
+	}
+#pragma endregion
+
+}
+
 float GameScene::Angle(float angle)
 {
 	return angle * PI / 180;
@@ -113,6 +180,7 @@ void GameScene::Update() {
 
 	player_->Update();
 	enemy_->Update();
+	CheckAllCollisions();
 	/*debugCamera_->Update();*/
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
