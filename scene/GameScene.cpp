@@ -9,6 +9,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete modelSkydome_;
 	/*delete debugCamera_;*/
 	delete player_;
 	delete enemy_;
@@ -108,10 +109,12 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
+
 	textureHandle_ = TextureManager::Load("mario.jpg");
-	enemyHandle_ = TextureManager::Load("A.jpg");
+	enemyHandle_ = TextureManager::Load("mario.jpg");
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
@@ -120,18 +123,10 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, enemyHandle_);
 	enemy_->SetPlayer(player_);
-	//乱数シード生成器
-	std::random_device seed_gen;
-	//メルセンヌ・ツイスターの乱数エンジン
-	std::mt19937_64 engin(seed_gen());
-	//乱数範囲の指定
-	std::uniform_real_distribution<float> dist(1, 100);
-	//回転範囲の指定
-	std::uniform_real_distribution<float> rot(0, 2 * PI);
-	//座標範囲の指定
-	std::uniform_real_distribution<float> tra(-10, +10);
-	//乱数エンジンを渡し,指定範囲からランダムな数値を得る
-	float value = dist(engin);
+	
+	//背景生成
+	sky_ = new Skydome();
+	sky_->Initialize(modelSkydome_);
 
 	//for (WorldTransform& worldTransform_ : worldTransforms_)
 	//{
@@ -151,7 +146,7 @@ void GameScene::Initialize() {
 		//ビュープロジェクションの初期化
 		viewProjection_.Initialize();
 		//デバッグカメラの生成
-		/*debugCamera_ = new DebugCamera(1280, 720);*/
+		debugCamera_ = new DebugCamera(1280, 720);
 
 
 		//軸方向の表示の表示を有効にする
@@ -177,11 +172,47 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_C)) {
+		if (isDebugCameraActive_) {
+			isDebugCameraActive_ = false;
+		}
+		else{
+			isDebugCameraActive_ = true;
+		}
+	}
+#endif // _DEBUG
+	if (isDebugCameraActive_) {
+		//視点移動ベクトル
+		Vector3 move = { 0,0,0 };
+		//視点の移動速度
+		const float kEyeSpeed = 1.2f;
 
+		//押した方向でベクトル変更
+		if (input_->PushKey(DIK_W)) {
+			move.z += kEyeSpeed;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			move.z -= kEyeSpeed;
+		}
+		//視点移動(ベクトルの加算)
+		viewProjection_.eye += move;
+		//行列の再計算
+		viewProjection_.UpdateMatrix();
+
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	}
+	else {
+		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
+	}
 	player_->Update();
 	enemy_->Update();
+	sky_->Update();
 	CheckAllCollisions();
-	/*debugCamera_->Update();*/
+
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
 	//if (input_->PushKey(DIK_W)) {
@@ -230,7 +261,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
+	
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -245,12 +276,12 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3Dモデル描画
-	
 	enemy_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
+	sky_->Draw(viewProjection_);
+	
 	// 3Dオブジェクト描画後処理
 	
-
 	Model::PostDraw();
 	
 	//Y軸
@@ -268,7 +299,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
+	
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
 	//

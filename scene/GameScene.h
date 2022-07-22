@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Player.h"
 #include "Enemy.h"
+#include "skydome.h"
+
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "DebugText.h"
@@ -80,15 +82,20 @@ class GameScene {
 	uint32_t enemyHandle_ = 0;
 	//3Dモデル
 	Model* model_ = nullptr;
+	Model* modelSkydome_ = nullptr;
+	//各クラスを渡すもの
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
+	Skydome* sky_ = nullptr;
 	//ワールドトランスフォーム
 	
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
 	//デバッグカメラ
-	/*DebugCamera* debugCamera_ = nullptr;
-	float viewAngle = 0.0f;*/
+	DebugCamera* debugCamera_ = nullptr;
+	float viewAngle = 0.0f;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
