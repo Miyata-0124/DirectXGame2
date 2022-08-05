@@ -12,11 +12,14 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 	//ワールド変換の初期化
+	worldTransform_.translation_ = { 0,0,20 };
 	worldTransform_.Initialize();
+	
 }
 
 void Player::Update()
 {
+
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
@@ -35,7 +38,8 @@ void Player::Update()
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
 	worldTransform_.matWorld_ *= Transform(worldTransform_.translation_);
-	
+
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
 

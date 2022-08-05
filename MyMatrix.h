@@ -14,6 +14,8 @@ Matrix4 Scale(Vector3 worldTransform_);
 //平行移動行列
 Matrix4 Transform(Vector3 worldTransform_);
 
+//行列の合成
+Matrix4 UpdateMatrix(Vector3 matscale, Vector3 matrot, Vector3 mattransform);
 //弾の回転用計算
 Vector3 BulletRot(Vector3 velocity,Matrix4 transform);
 

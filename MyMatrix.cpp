@@ -93,6 +93,18 @@ Matrix4 Transform(Vector3 worldTransform_)
 	return matTrans;
 }
 
+Matrix4 UpdateMatrix(Vector3 matscale, Vector3 matrot, Vector3 mattransform)
+{
+	Matrix4 matrix;
+	Matrix4 scale;
+	Matrix4 rot;
+	Matrix4 trans;
+	scale = Scale(matscale);
+	rot = Rot(matrot);
+	trans = Transform(mattransform);
+	return matrix = scale *= rot *= trans;
+}
+
 Vector3 BulletRot(Vector3 velocity, Matrix4 transform)
 {
 	Vector3 bulletMath;

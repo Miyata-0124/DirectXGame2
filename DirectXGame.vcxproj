@@ -103,6 +103,7 @@
     <ClCompile Include="MyMatrix.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
+    <ClCompile Include="ReilCamera.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="skydome.cpp" />
   </ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="ReilCamera.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="skydome.h" />
   </ItemGroup>

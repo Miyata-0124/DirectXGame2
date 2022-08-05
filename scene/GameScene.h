@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "skydome.h"
+#include "ReilCamera.h"
 
 #include "Audio.h"
 #include "DirectXCommon.h"
@@ -87,6 +88,7 @@ class GameScene {
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
 	Skydome* sky_ = nullptr;
+	std::unique_ptr<RailCamera> camera_;
 	//ワールドトランスフォーム
 	
 	//ビュープロジェクション
@@ -94,8 +96,8 @@ class GameScene {
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
 	//デバッグカメラ
-	DebugCamera* debugCamera_ = nullptr;
-	float viewAngle = 0.0f;
+	//DebugCamera* debugCamera_ = nullptr;
+	//float viewAngle = 0.0f;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

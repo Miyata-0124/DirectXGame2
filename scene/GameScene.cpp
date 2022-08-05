@@ -115,6 +115,7 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
@@ -124,10 +125,18 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_, enemyHandle_);
 	enemy_->SetPlayer(player_);
 	
+	//レ-ルカメラ
+	camera_ = std::make_unique<RailCamera>();
+	camera_->Initialize(Vector3(0, 0, -50), Vector3(0, 0, 0));
+
+	//レールカメラとプレイヤーの親子構造
+	player_->SetCamera(camera_->GetWorldMatrix());
+
 	//背景生成
 	sky_ = new Skydome();
 	sky_->Initialize(modelSkydome_);
 
+	
 	//for (WorldTransform& worldTransform_ : worldTransforms_)
 	//{
 	//	//ワールドトランスフォームの初期化
@@ -146,29 +155,17 @@ void GameScene::Initialize() {
 		//ビュープロジェクションの初期化
 		viewProjection_.Initialize();
 		//デバッグカメラの生成
-		debugCamera_ = new DebugCamera(1280, 720);
+		/*debugCamera_ = new DebugCamera(1280, 720);*/
 
+		
 
 		//軸方向の表示の表示を有効にする
 		AxisIndicator::GetInstance()->SetVisible(true);
 		//軸方向表示が参照するビュープロジェクションを指定(アドレス渡し)
 	/*	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());*/
 		//ライン描画が参照するビュープロジェクションを指定(アドレス渡し)
-		PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_/*debugCamera_->GetViewProjection()*/);
-		//x,y,z方向のスケーリング
-		/*worldTransform_.scale_ = { 1,1,1 };*/
-		//x,y,z軸の回転角設定
-		//worldTransform_.rotation_ = { rot(engin) , rot(engin) , rot(engin) };//z軸
-		//x,y,z軸の平行移動の設定
-		/*worldTransform_.translation_ = { tra(engin),tra(engin),tra(engin) };*/
-
-		//合成
-		/*worldTransform_.matWorld_ *= Scale(worldTransform_.scale_);
-		worldTransform_.matWorld_ *= RotZ(worldTransform_.rotation_);
-		worldTransform_.matWorld_ *= RotX(worldTransform_.rotation_);
-		worldTransform_.matWorld_ *= RotY(worldTransform_.rotation_);
-		worldTransform_.matWorld_ *= Transform(worldTransform_.translation_);*/
-	//}
+		//PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_/*debugCamera_->GetViewProjection()*/);
+		
 }
 
 void GameScene::Update() {
@@ -182,69 +179,33 @@ void GameScene::Update() {
 		}
 	}
 #endif // _DEBUG
-	if (isDebugCameraActive_) {
-		//視点移動ベクトル
-		Vector3 move = { 0,0,0 };
-		//視点の移動速度
-		const float kEyeSpeed = 1.2f;
+	
+	camera_->Update();
 
-		//押した方向でベクトル変更
-		if (input_->PushKey(DIK_W)) {
-			move.z += kEyeSpeed;
-		}
-		else if (input_->PushKey(DIK_S)) {
-			move.z -= kEyeSpeed;
-		}
-		//視点移動(ベクトルの加算)
-		viewProjection_.eye += move;
-		//行列の再計算
-		viewProjection_.UpdateMatrix();
+	//railCameraをゲームシーンに適応させる
+	viewProjection_.matView = camera_->GetViewProjection().matView;
+	viewProjection_.matProjection = camera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
 
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	}
-	else {
-		viewProjection_.UpdateMatrix();
-		viewProjection_.TransferMatrix();
-	}
+	/*
+		worldTransform_.parent_ // 親のワールドトランスフォームのポインタ
+		ポインタを持ってることは家の鍵と住所知っているのと同じ
+		もちろんワールド行列を取得できる
+		worldTransform_.parent_->matWorld_;
+
+		ローカル座標
+		親 100 , 0 ,0
+		子 0 , 0 , 0
+
+	*/
+
 	player_->Update();
 	enemy_->Update();
 	sky_->Update();
 	CheckAllCollisions();
-
-#pragma region 連続移動処理
-	//押した方向で移動ベクトルを変更
-	//if (input_->PushKey(DIK_W)) {
-	//	move.z += kEyeSpeed;
-	//}
-	//else if (input_->PushKey(DIK_S)) {
-	//	move.z -= kEyeSpeed;
-	//}
-	//if (input_->PushKey(DIK_LEFT)) {
-	//	move.x -= kEyeSpeed;
-	//}
-	//else if (input_->PushKey(DIK_RIGHT)) {
-	//	move.x += kEyeSpeed;
-	//}
-
-	////上方向の回転の速さ
-	//const float kUpRotSpeed = 0.05f;
-	////押した方向で移動ベクトルを変更
-	//if (input_->PushKey(DIK_SPACE)) {
-	//	viewAngle += kUpRotSpeed;
-	//	//2PIを超えると0に戻す
-	//	viewAngle = fmodf(viewAngle, PI * 2.0f);
-	//}
-
-	////上方向ベクトルを計算(半径１の円周上の座標)
-	//viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
-	////視点移動(ベクトルの加算)
-	//viewProjection_.eye += move;
-#pragma endregion
+	
 
 	//行列の再計算
-	viewProjection_.UpdateMatrix();
 	//デバッグ用表示
 
 }
@@ -284,12 +245,12 @@ void GameScene::Draw() {
 	
 	Model::PostDraw();
 	
-	//Y軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,10,0 }, { 0,1,0,1 });
-	//X軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 10,0,0 }, { 1,0,0,1 });
-	//Z軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,0,10 }, { 0,0,1,1 });
+	////Y軸
+	//PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,10,0 }, { 0,1,0,1 });
+	////X軸
+	//PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 10,0,0 }, { 1,0,0,1 });
+	////Z軸
+	//PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,0,10 }, { 0,0,1,1 });
 #pragma endregion
 
 #pragma region 前景スプライト描画
