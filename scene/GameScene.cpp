@@ -46,6 +46,12 @@ void GameScene::Initialize() {
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
+	//レ-ルカメラ
+	camera_ = std::make_unique<RailCamera>();
+	camera_->Initialize(Vector3(0, 0, -50), Vector3(0, 0, 0));
+	//背景生成
+	sky_ = new Skydome();
+	sky_->Initialize(modelSkydome_);
 	//乱数シード生成器
 	std::random_device seed_gen;
 	//メルセンヌ・ツイスターの乱数エンジン
@@ -105,7 +111,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player_->Update();
+	sky_->Update();
 	/*debugCamera_->Update();*/
+	camera_->Update();
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
 	//if (input_->PushKey(DIK_W)) {
@@ -171,7 +179,7 @@ void GameScene::Draw() {
 	//3Dモデル描画
 	
 	player_->Draw(viewProjection_);
-
+	sky_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	
 
