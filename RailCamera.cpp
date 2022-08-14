@@ -7,7 +7,7 @@ void RailCamera::Initialize(Vector3 position,Vector3 rotation)
 	worldTransform_.rotation_ = rotation;
 
 	//ビュープロジェクションの初期化
-	viewProjection_.farZ = 2000.0f;
+	/*viewProjection_.farZ = 2000.0f;*/
 	viewProjection_.Initialize();
 
 }
@@ -15,7 +15,7 @@ void RailCamera::Initialize(Vector3 position,Vector3 rotation)
 void RailCamera::Update()
 {
 	//移動(ベクトルを加算)
-	worldTransform_.translation_ += Vector3(0, 0.1f, 0.1f);
+	worldTransform_.translation_ += Vector3(0, 0, 0.1f);
 	//トランスフォームを更新
 	worldTransform_.matWorld_ = Identity();
 	worldTransform_.matWorld_ *= Scale(worldTransform_.scale_);

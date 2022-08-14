@@ -9,6 +9,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete modelSkydome_;
 	/*delete debugCamera_;*/
 	delete player_;
 }
@@ -43,6 +44,7 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
