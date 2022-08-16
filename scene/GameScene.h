@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Player.h"
 #include "skydome.h"
-#include "RailCamera.h"
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "DebugText.h"
@@ -76,7 +75,6 @@ class GameScene {
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 	Player* player_ = nullptr;
-	std::unique_ptr<RailCamera> camera_;
 	Skydome* sky_ = nullptr;
 	//ワールドトランスフォーム
 	

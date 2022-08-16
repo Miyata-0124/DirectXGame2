@@ -48,9 +48,7 @@ void GameScene::Initialize() {
 	//自キャラ生成
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
-	//レ-ルカメラ
-	camera_ = std::make_unique<RailCamera>();
-	camera_->Initialize(Vector3(0, 0, -50), Vector3(0, 0, 0));
+
 	//背景生成
 	sky_ = new Skydome();
 	sky_->Initialize(modelSkydome_);
@@ -115,7 +113,7 @@ void GameScene::Update() {
 	player_->Update();
 	sky_->Update();
 	/*debugCamera_->Update();*/
-	camera_->Update();
+	
 #pragma region 連続移動処理
 	//押した方向で移動ベクトルを変更
 	//if (input_->PushKey(DIK_W)) {
