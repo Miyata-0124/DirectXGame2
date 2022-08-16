@@ -49,6 +49,9 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(model_,textureHandle_);
 
+	//レ-ルカメラ
+	camera_ = std::make_unique<RailCamera>();
+	camera_->Initialize(Vector3(0, 0, -50), Vector3(0, 0, 0));
 	//背景生成
 	sky_ = new Skydome();
 	sky_->Initialize(modelSkydome_);
@@ -110,6 +113,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	camera_->Update();
 	player_->Update();
 	sky_->Update();
 	/*debugCamera_->Update();*/
@@ -177,7 +181,6 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3Dモデル描画
-	
 	player_->Draw(viewProjection_);
 	sky_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
