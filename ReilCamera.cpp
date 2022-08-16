@@ -47,4 +47,5 @@ void RailCamera::Update()
 	//デバッグ用表示
 	debugText_->SetPos(20, 100);
 	debugText_->Printf("RailCamera Pos(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+
 }
