@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Player.h"
+#include "Enemy.h"
 #include "skydome.h"
-#include "RailCamera.h"
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "DebugText.h"
@@ -47,9 +47,6 @@ class GameScene {
 
 	float Angle(float angle);
 
-	/*float MinNum(float num, float num2);
-	float MaxNum(float num, float num2);*/
-
 	//パーツID
 	enum PartId
 	{
@@ -76,15 +73,12 @@ class GameScene {
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 	Player* player_ = nullptr;
+	Enemy* enemy_ = nullptr;
 	Skydome* sky_ = nullptr;
-	std::unique_ptr<RailCamera> camera_;
-	//ワールドトランスフォーム
-	
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
-	//デバッグカメラ
-	/*DebugCamera* debugCamera_ = nullptr;
-	float viewAngle = 0.0f;*/
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

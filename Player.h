@@ -20,7 +20,7 @@ public:
 	/// 初期化
 	/// </summary>
 
-	void Initialize(Model* model, uint32_t textureHandle_);
+	void Initialize(Model* model);
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -52,8 +52,6 @@ private:
 	WorldTransform worldTransform_;
 	//モデル
 	Model* model_ = nullptr;
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
 	DebugText *debugText_ = nullptr;

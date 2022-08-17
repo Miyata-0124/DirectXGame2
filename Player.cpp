@@ -1,12 +1,11 @@
 #include "Player.h"
 #include "MyMatrix.h"
 
-void Player::Initialize(Model* model, uint32_t textureHandle)
+void Player::Initialize(Model* model)
 {
 	//NULLポインタチェック
 	assert(model);
 	model_ = model;
-	textureHandle_ = textureHandle;
 
 	//シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
@@ -47,14 +46,15 @@ void Player::Update()
 
 void Player::Rotation()
 {
-	const float rotSpeed = 0.05f;
-
 	//キャラの回転
-	if (input_->PushKey(DIK_E)) {
-		worldTransform_.rotation_.y += rotSpeed;
+	if (input_->TriggerKey(DIK_E)) {
+		worldTransform_.rotation_.y = 1.55f;
 	}
-	else if (input_->PushKey(DIK_Q)) {
-		worldTransform_.rotation_.y -= rotSpeed;
+	else if (input_->TriggerKey(DIK_Q)) {
+		worldTransform_.rotation_.y = -1.55f;
+	}
+	if (input_->TriggerKey(DIK_W)) {
+		worldTransform_.rotation_.y = 0;
 	}
 
 }
@@ -114,7 +114,7 @@ void Player::Attack()
 
 void Player::Draw(ViewProjection& viewProjection)
 {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection);
 
 	//弾の描画
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
