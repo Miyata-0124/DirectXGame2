@@ -22,9 +22,9 @@ void Player::Update()
 		return bullet->IsDead();
 		});
 	//ù‰ñˆ—
-	Translation();
-	//ˆÚ“®ˆ—
 	Rotation();
+	//ˆÚ“®ˆ—
+	Translation();
 	//UŒ‚ˆ—
 	Attack();
 	//’eXV
@@ -48,16 +48,6 @@ void Player::Update()
 
 void Player::Rotation()
 {
-	//ƒLƒƒƒ‰‚Ì‰ñ“]
-	if (input_->TriggerKey(DIK_E)) {
-		worldTransform_.rotation_.y = 1.55f;
-	}
-	else if (input_->TriggerKey(DIK_Q)) {
-		worldTransform_.rotation_.y = -1.55f;
-	}
-	if (input_->TriggerKey(DIK_W)) {
-		worldTransform_.rotation_.y = 0;
-	}
 
 }
 
@@ -100,14 +90,14 @@ void Player::Attack()
 	if (input_->TriggerKey(DIK_SPACE)) {
 
 		// ’e‚Ì‘¬“x
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 0.05f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		// ‘¬“xƒxƒNƒgƒ‹‚ğ©‹@‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]‚³‚¹‚é
 		velocity = BulletRot(velocity,worldTransform_.matWorld_);
 		//’e‚ğ¶¬,‰Šú‰»
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
+		newBullet->Initialize(model_, worldTransform_.matWorld_, velocity);
 
 		// ’e‚ğ“o˜^
 		bullets_.push_back(std::move(newBullet));

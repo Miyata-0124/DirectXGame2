@@ -1,7 +1,7 @@
 #include "PlayerBullet.h"
 #include "MyMatrix.h"
 
-void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vector3& verosity)
+void PlayerBullet::Initialize(Model* model, const Matrix4& position, const Vector3& verosity)
 {
 	//NULLポインタチェック
 	assert(model);
@@ -12,7 +12,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 
 	worldTransform_.Initialize();
 	//引数で受け取った初期化座標をセット
-	worldTransform_.translation_ = position;
+	worldTransform_.translation_.x = position.m[3][0];
+	worldTransform_.translation_.y = position.m[3][1];
+	worldTransform_.translation_.z = position.m[3][2];
 	velocity_ = verosity;
 }
 

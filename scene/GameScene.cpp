@@ -119,7 +119,7 @@ void GameScene::Initialize() {
 	enemy_->SetPlayer(player_);
 	//レ-ルカメラ
 	camera_ = std::make_unique<RailCamera>();
-	camera_->Initialize(Vector3(0, 0, -30), Vector3(0, 0, 0));
+	camera_->Initialize(Vector3(0, 0, -20), Vector3(0, 0, 0));
 	//レールカメラとプレイヤーの親子構造
 	player_->SetCamera(camera_->GetWorldMatrix());
 	//背景生成
