@@ -1,7 +1,7 @@
-#include "PlayerBullet.h"
+#include "EnemyBullet.h"
 #include "MyMatrix.h"
 
-void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vector3& verosity)
+void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity)
 {
 	//NULLポインタチェック
 	assert(model);
@@ -13,12 +13,12 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.Initialize();
 	//引数で受け取った初期化座標をセット
 	worldTransform_.translation_ = position;
-	velocity_ = verosity;
+	velocity_ = velocity;
 }
 
-void PlayerBullet::Update()
+void EnemyBullet::Update()
 {
-	worldTransform_.translation_ += velocity_;
+	worldTransform_.translation_ -= velocity_;
 
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
@@ -35,15 +35,14 @@ void PlayerBullet::Update()
 
 }
 
-void PlayerBullet::OnCollision()
+void EnemyBullet::OnCollision()
 {
 	isDead_ = true;
 }
-Vector3 PlayerBullet::GetWorldPosition()
+Vector3 EnemyBullet::GetWorldPosition()
 {
-	//ワールド座標を入れる変数
 	Vector3 worldPos;
-	//ワールド行列の平行移動成分を取得(ワールド座標)
+
 	worldPos.x = worldTransform_.translation_.x;
 	worldPos.y = worldTransform_.translation_.y;
 	worldPos.z = worldTransform_.translation_.z;
@@ -51,12 +50,11 @@ Vector3 PlayerBullet::GetWorldPosition()
 	return worldPos;
 }
 
-float PlayerBullet::GetRadius()
+float EnemyBullet::GetRadius()
 {
 	return radius_;
 }
-
-void PlayerBullet::Draw(const ViewProjection& viewProjection)
+void EnemyBullet::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }

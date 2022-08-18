@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Player.h"
 #include "Enemy.h"
+#include "RailCamera.h"
 #include "skydome.h"
 #include "Audio.h"
 #include "DirectXCommon.h"
@@ -12,6 +13,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "MyMatrix.h"
 #define PI 3.14
 
 /// <summary>
@@ -40,6 +42,8 @@ class GameScene {
 	/// </summary>
 	void Update();
 
+	void CheckAllCollision();
+
 	/// <summary>
 	/// 描画
 	/// </summary>
@@ -47,21 +51,6 @@ class GameScene {
 
 	float Angle(float angle);
 
-	//パーツID
-	enum PartId
-	{
-		kRoot,	//大元
-		kSpine, //脊髄
-		kChest, //胸
-		kHead,	//頭
-		kArmL,	//左腕
-		kArmR,	//右腕
-		kHip,	//尻
-		kLegL,	//左足
-		kLegR,	//右足
-
-		kNumPartId
-	};
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -72,9 +61,11 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	//GameSceneに持たせる
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
 	Skydome* sky_ = nullptr;
+	std::unique_ptr<RailCamera> camera_;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

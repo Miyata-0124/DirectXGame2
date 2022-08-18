@@ -9,6 +9,7 @@
 #include <memory>
 #include <list>
 
+class RailCamera;
 
 /// <summary>
 /// 自キャラ
@@ -45,8 +46,20 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void OnCollision();
+
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	//レールカメラ取得用Setter
+	void SetCamera(WorldTransform* camera) { worldTransform_.parent_ = camera; }
+
+	float GetRadius();
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -58,6 +71,7 @@ private:
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	
+	//半径
+	const float radius_ = 1.0f;
 };
 

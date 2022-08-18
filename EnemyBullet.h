@@ -6,9 +6,7 @@
 #include "ViewProjection.h"
 #include <cassert>
 
-
-class PlayerBullet
-{
+class EnemyBullet {
 public:
 	/// <summary>
 	/// 初期化
@@ -29,13 +27,13 @@ public:
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Draw(const ViewProjection& viewProjection);
 
+	//ゲッター
+	bool IsDead() const { return isDead_; }
+
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
 
 	float GetRadius();
-
-	//ゲッター
-	bool IsDead() const { return isDead_; }
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;

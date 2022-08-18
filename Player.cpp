@@ -11,6 +11,7 @@ void Player::Initialize(Model* model)
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 	//ワールド変換の初期化
+	worldTransform_.translation_ = { 0,0,20 };
 	worldTransform_.Initialize();
 }
 
@@ -35,6 +36,7 @@ void Player::Update()
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
 	worldTransform_.matWorld_ *= Transform(worldTransform_.translation_);
 	
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
 
@@ -112,6 +114,22 @@ void Player::Attack()
 	}
 }
 
+Vector3 Player::GetWorldPosition()
+{
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+float Player::GetRadius()
+{
+	return radius_;
+}
+
 void Player::Draw(ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection);
@@ -120,4 +138,8 @@ void Player::Draw(ViewProjection& viewProjection)
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
+}
+
+void Player::OnCollision()
+{
 }

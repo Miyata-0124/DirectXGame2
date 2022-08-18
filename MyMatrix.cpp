@@ -97,20 +97,42 @@ Vector3 BulletRot(Vector3 velocity, Matrix4 transform)
 {
 	Vector3 bulletMath;
 
-	bulletMath.x  = velocity.x * transform.m[0][0];
+	bulletMath.x = velocity.x * transform.m[0][0];
 	bulletMath.x += velocity.y * transform.m[1][0];
 	bulletMath.x += velocity.z * transform.m[2][0];
 	bulletMath.x += velocity.x * transform.m[3][0];
 
-	bulletMath.y  = velocity.x * transform.m[0][1];
+	bulletMath.y = velocity.x * transform.m[0][1];
 	bulletMath.y += velocity.y * transform.m[1][1];
 	bulletMath.y += velocity.z * transform.m[2][1];
 	bulletMath.y += velocity.y * transform.m[3][1];
 
-	bulletMath.z  = velocity.x * transform.m[0][2];
+	bulletMath.z = velocity.x * transform.m[0][2];
 	bulletMath.z += velocity.y * transform.m[1][2];
 	bulletMath.z += velocity.z * transform.m[2][2];
 	bulletMath.z += velocity.z * transform.m[3][2];
 
 	return bulletMath;
+}
+
+Vector3 Normalize(Vector3 vector)
+{
+	float len = Length(vector);
+	if (len != 0)
+	{
+		return vector /= len;
+	}
+	return vector;
+}
+
+float Length(Vector3 vector)
+{
+	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+}
+
+Vector3 Vectornorm(Vector3 vec1, Vector3 vec2)
+{
+	Vector3 vecPos = vec1 -= vec2;
+
+	return vecPos;
 }

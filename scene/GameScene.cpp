@@ -12,8 +12,74 @@ GameScene::~GameScene() {
 	delete modelSkydome_;
 	/*delete debugCamera_;*/
 	delete player_;
+	delete enemy_;
 }
+//当たり判定
+void GameScene::CheckAllCollision()
+{
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
 
+	//自弾リストの取得
+	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+	//敵弾リストの取得
+	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
+#pragma region 自キャラと敵弾の当たり判定
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPosition();
+		Vector3 len = Vectornorm(posA, posB);
+		float dis = Length(len);
+		float radius = player_->GetRadius() + bullet->GetRadius();
+		if (dis <= radius)
+		{
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	posA = enemy_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPosition();
+		Vector3 len = Vectornorm(posA, posB);
+		float dis = Length(len);
+		float radius = enemy_->GetRadius() + bullet->GetRadius();
+		if (dis <= radius)
+		{
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet1 : enemyBullets) {
+		posA = bullet1->GetWorldPosition();
+
+		for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+			//自弾の座標
+			posB = bullet->GetWorldPosition();
+			Vector3 len = Vectornorm(posA, posB);
+			float dis = Length(len);
+			float radius = enemy_->GetRadius() + bullet->GetRadius();
+			if (dis <= radius)
+			{
+				bullet1->OnCollision();
+				bullet->OnCollision();
+			}
+		}
+	}
+#pragma endregion
+}
 float GameScene::Angle(float angle)
 {
 	return angle * PI / 180;
@@ -50,6 +116,12 @@ void GameScene::Initialize() {
 	//敵キャラ生成
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_);
+	enemy_->SetPlayer(player_);
+	//レ-ルカメラ
+	camera_ = std::make_unique<RailCamera>();
+	camera_->Initialize(Vector3(0, 0, -30), Vector3(0, 0, 0));
+	//レールカメラとプレイヤーの親子構造
+	player_->SetCamera(camera_->GetWorldMatrix());
 	//背景生成
 	sky_ = new Skydome();
 	sky_->Initialize(modelSkydome_);
@@ -84,11 +156,19 @@ void GameScene::Update() {
 
 	player_->Update();
 	enemy_->Update();
-	sky_->Update();
-
+	camera_->Update();
+	//railCameraをゲームシーンに適応させる
+	viewProjection_.matView = camera_->GetViewProjection().matView;
+	viewProjection_.matProjection = camera_->GetViewProjection().matProjection;
 	//行列の再計算
-	viewProjection_.UpdateMatrix();
+	viewProjection_.TransferMatrix();
+	sky_->Update();
+	CheckAllCollision();
+
+	
 }
+
+
 
 void GameScene::Draw() {
 
