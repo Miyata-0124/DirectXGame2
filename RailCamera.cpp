@@ -12,8 +12,9 @@ void RailCamera::Initialize(const Vector3& position, const Vector3& rotation)
 
 void RailCamera::Update()
 {
+	Vector3 speed = { 0,0,0.1f };
 	//移動(ベクトルを加算)
-	worldTransform_.translation_ += Vector3(0, 0, 0.1f);
+	worldTransform_.translation_ += speed;
 
 	//トランスフォームを更新
 	worldTransform_.matWorld_ = Identity();

@@ -44,6 +44,7 @@ class GameScene {
 
 	void CheckAllCollision();
 
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemybullet);
 	/// <summary>
 	/// 描画
 	/// </summary>
