@@ -165,7 +165,6 @@ void GameScene::Update() {
 	sky_->Update();
 	CheckAllCollision();
 
-	
 }
 
 
@@ -201,16 +200,8 @@ void GameScene::Draw() {
 	enemy_->Draw(viewProjection_);
 	sky_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
-	
 
 	Model::PostDraw();
-	
-	//Y軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,10,0 }, { 0,1,0,1 });
-	//X軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 10,0,0 }, { 1,0,0,1 });
-	//Z軸
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, { 0,0,10 }, { 0,0,1,1 });
 #pragma endregion
 
 #pragma region 前景スプライト描画

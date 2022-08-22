@@ -18,9 +18,9 @@ void Enemy::Update()
 {
 	switch (phase_)
 	{
-	case Phase::Approach:
+	case Phase::Attack:
 	default:
-		Approach();
+		Attack();
 		break;
 	case Phase::Leave:
 		Leave();
@@ -56,14 +56,26 @@ void Enemy::Draw(ViewProjection& viewProjection)
 	}
 }
 
+
 void Enemy::Approach()
 {
+	phaseTimer_ -= 1.0f;
 	//移動
 	worldTransform_.translation_ += apSpeed;
 	//規定値の位置に到着したら削除
-	if (worldTransform_.translation_.z <  player_->GetWorldPosition().z) {
+	if (phaseTimer_ <= 0) {
+		phaseTimer_ == 10;
 		phase_ = Phase::Leave;
 	}
+}
+
+void Enemy::AppInitialize()
+{
+	bulletTimer = kFireInterval;
+}
+
+void Enemy::Attack()
+{
 	//発射タイマーをデクリメント
 	bulletTimer--;
 	//指定時間に達したら
@@ -74,18 +86,9 @@ void Enemy::Approach()
 		bulletTimer = kFireInterval;
 	}
 }
-void Enemy::AppInitialize()
-{
-	bulletTimer = kFireInterval;
-}
-void Enemy::Attack()
-{
-
-}
 
 void Enemy::Leave()
 {
-	//移動
 	worldTransform_.translation_ += leSpeed;
 }
 

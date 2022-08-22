@@ -68,6 +68,7 @@ private:
 	//”¼Œa
 	const float radius_ = 1.0f;
 
+	float phaseTimer_ = 10.0f;
 	enum class Phase {
 		Approach, //Ú‹ß
 		Attack,	  //UŒ‚
