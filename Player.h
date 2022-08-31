@@ -21,16 +21,11 @@ public:
 	/// 初期化
 	/// </summary>
 
-	void Initialize(Model* model);
+	void Initialize(Model* model,Model* modelB);
 	/// <summary>
 	/// 更新
 	/// </summary>
 	void Update();
-
-	/// <summary>
-	/// 回転処理
-	/// </summary>
-	void Rotation();
 
 	/// <summary>
 	/// 移動処理
@@ -58,13 +53,14 @@ public:
 
 	//レールカメラ取得用Setter
 	void SetCamera(WorldTransform* camera) { worldTransform_.parent_ = camera; }
-
+	
 	float GetRadius();
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
 	Model* model_ = nullptr;
+	Model* modelB_ = nullptr;
 
 	Input* input_ = nullptr;
 	DebugText *debugText_ = nullptr;
@@ -73,5 +69,6 @@ private:
 
 	//半径
 	const float radius_ = 1.0f;
+
 };
 

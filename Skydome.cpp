@@ -3,20 +3,21 @@
 
 void Skydome::Initialize(Model* model)
 {
+
+
 	//NULLポインタチェック
 	assert(model);
 	model_ = model;
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.scale_ = { 100,100,100 };
+	worldTransform_.scale_ = { 1000,1000,1000 };
 	worldTransform_.rotation_ = { 0,0,0 };
 	worldTransform_.translation_ = { 0,0,0 };
 }
 
 void Skydome::Update()
 {
-	worldTransform_.rotation_.y += 0.0005f;
 	//行列計算
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);

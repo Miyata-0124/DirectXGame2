@@ -58,16 +58,22 @@ class GameScene {
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
-	uint32_t textureHandle_ = 0;
+	uint32_t textureHandle_ = 0u;
+	uint32_t textureHP_[2] = { 0u,0u };
+	uint32_t texture_[4] = { 0u,0u,0u,0u };
+	Sprite* sprite_[6] = {};
 	//3Dモデル
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	Model* modelEnemy_ = nullptr;
+	Model* modelBullet_ = nullptr;
 	//GameSceneに持たせる
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
 	Skydome* sky_ = nullptr;
 	std::unique_ptr<RailCamera> camera_;
 
+	int scene;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 

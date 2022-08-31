@@ -55,5 +55,5 @@ private:
 	bool isDead_ = false;
 
 	//”¼Œa
-	const float radius_ = 1.0f;
+	const float radius_ = 1.5f;
 };

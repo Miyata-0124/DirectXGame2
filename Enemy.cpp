@@ -2,24 +2,37 @@
 #include "MyMatrix.h"
 #include <cassert>
 #include "Player.h"
+#include "DebugText.h"
+#include <random>
 
-void Enemy::Initialize(Model* model)
+void Enemy::Initialize(Model* model,Model* modelB)
 {
 	//NULLポインタチェック
 	assert(model);
+	assert(modelB);
 	model_ = model;
+	modelB_ = modelB;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 5,0,50 };
+	worldTransform_.translation_ = { 0,0,300 };
 
 	AppInitialize();
 }
 
 void Enemy::Update()
 {
+	if (phaseTimer != 0)
+	{
+		phaseTimer -= 0.01f;
+	}
+	
+	
 	switch (phase_)
 	{
-	case Phase::Attack:
+	case Phase::Approach:
 	default:
+		Approach();
+		break;
+	case Phase::Attack:
 		Attack();
 		break;
 	case Phase::Leave:
@@ -43,7 +56,10 @@ void Enemy::Update()
 
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
-	
+
+	DebugText* debugText_ = DebugText::GetInstance();
+
+	//デバッグ用表示
 }
 
 void Enemy::Draw(ViewProjection& viewProjection)
@@ -55,23 +71,52 @@ void Enemy::Draw(ViewProjection& viewProjection)
 		bullet->Draw(viewProjection);
 	}
 }
-
-
+//距離放す
 void Enemy::Approach()
 {
-	phaseTimer_ -= 1.0f;
-	//移動
-	worldTransform_.translation_ += apSpeed;
+	worldTransform_.translation_ -= apSpeed;
+	
 	//規定値の位置に到着したら削除
-	if (phaseTimer_ <= 0) {
-		phaseTimer_ == 10;
-		phase_ = Phase::Leave;
+	if (phaseTimer<=0) {
+		phase_ = Phase::Attack;
 	}
+
+}
+
+void Enemy::Leave()
+{
+	bulletTimer--;
+	if (bulletTimer >= 0)
+	{
+		Fire();
+	}
+	else if (bulletTimer <= 0)
+	{
+		attackTimer--;
+		if (attackTimer <= 0)
+		{
+			//発射タイマーを初期化
+			bulletTimer = kFireInterval;
+			attackTimer = 100;
+		}
+	}
+	
+	worldTransform_.translation_ += leSpeed;
+	if (worldTransform_.translation_.x >= 20)
+	{
+		leSpeed.x = -leSpeed.x;
+	}
+	else if (worldTransform_.translation_.x <= -20)
+	{
+		leSpeed.x = -leSpeed.x;
+	}
+
 }
 
 void Enemy::AppInitialize()
 {
 	bulletTimer = kFireInterval;
+	wayBuletTimer = wFireInterval;
 }
 
 void Enemy::Attack()
@@ -85,11 +130,14 @@ void Enemy::Attack()
 		//発射タイマーを初期化
 		bulletTimer = kFireInterval;
 	}
-}
+	//2発目の弾
+	wayBuletTimer--;
+	if (wayBuletTimer <= 0)
+	{
+		WayFire();
+		wayBuletTimer = wFireInterval;
+	}
 
-void Enemy::Leave()
-{
-	worldTransform_.translation_ += leSpeed;
 }
 
 void Enemy::Fire()
@@ -108,7 +156,26 @@ void Enemy::Fire()
 	vecPos *= kBulletSpeed;
 	//弾を生成,初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(modelB_, worldTransform_.translation_, velocity);
+
+	// 弾を登録
+	bullets_.push_back(std::move(newBullet));
+}
+
+void Enemy::WayFire()
+{
+	//乱数シード
+	std::random_device seed_gen;
+	//メルセンヌツイスター
+	std::mt19937_64 engin(seed_gen());
+	//乱数範囲
+	std::uniform_real_distribution<float>posDist(-0.25f, 0.25f);
+	//弾速度
+	const float wBulletSpeed = 1;
+	Vector3 velocity(posDist(engin), 0,wBulletSpeed);
+	//弾の生成
+	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+	newBullet->Initialize(modelB_, worldTransform_.translation_, velocity);
 
 	// 弾を登録
 	bullets_.push_back(std::move(newBullet));
@@ -116,6 +183,11 @@ void Enemy::Fire()
 
 void Enemy::OnCollision()
 {
+	hp -= 1;
+	if (hp <= 25)
+	{
+		phase_ = Phase::Leave;
+	}
 }
 
 Vector3 Enemy::GetWorldPosition()

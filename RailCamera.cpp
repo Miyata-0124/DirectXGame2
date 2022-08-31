@@ -12,8 +12,16 @@ void RailCamera::Initialize(const Vector3& position, const Vector3& rotation)
 
 void RailCamera::Update()
 {
-	Vector3 speed = { 0,0,0.1f };
+	Vector3 speed;
 	//移動(ベクトルを加算)
+	if (worldTransform_.translation_.z < 50)
+	{
+		speed = { 0,0,0.1f };
+	}
+	else if (worldTransform_.translation_.z >= 50)
+	{
+		speed = { 0,0,0 };
+	}
 	worldTransform_.translation_ += speed;
 
 	//トランスフォームを更新
@@ -44,6 +52,26 @@ void RailCamera::Update()
 	DebugText* debugText_ = DebugText::GetInstance();
 
 	//デバッグ用表示
-	debugText_->SetPos(20, 100);
-	debugText_->Printf("RailCamera Pos(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+
+}
+
+void RailCamera::OnCollision()
+{
+	Hp -= 1;
+}
+
+Vector3 RailCamera::GetWorldPosition()
+{
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+float RailCamera::GetRadius()
+{
+	return radius_;
 }

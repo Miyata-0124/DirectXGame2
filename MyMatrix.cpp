@@ -136,3 +136,19 @@ Vector3 Vectornorm(Vector3 vec1, Vector3 vec2)
 
 	return vecPos;
 }
+
+//clampŠÖ”
+float Clamp(float min, float max, float num)
+{
+
+	if (min > num)
+	{
+		return min;
+	}
+	else if (max < num)
+	{
+		return max;
+	}
+	return num;
+}
+

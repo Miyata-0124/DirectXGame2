@@ -8,7 +8,7 @@ void PlayerBullet::Initialize(Model* model, const Matrix4& position, const Vecto
 
 	model_ = model;
 	//テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("black.png");
+	textureHandle_ = TextureManager::Load("Yellow.png");
 
 	worldTransform_.Initialize();
 	//引数で受け取った初期化座標をセット

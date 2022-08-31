@@ -24,3 +24,5 @@ Vector3 Normalize(Vector3 vector);
 float Length(Vector3 vector);
 
 Vector3 Vectornorm(Vector3 vec1, Vector3 vec2);
+
+float Clamp(float min, float max, float num);

@@ -1,17 +1,19 @@
 #include "Player.h"
 #include "MyMatrix.h"
 
-void Player::Initialize(Model* model)
+void Player::Initialize(Model* model,Model* modelB)
 {
 	//NULLポインタチェック
 	assert(model);
+	assert(modelB);
 	model_ = model;
+	modelB_ = modelB;
 
 	//シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 	//ワールド変換の初期化
-	worldTransform_.translation_ = { 0,0,20 };
+	worldTransform_.translation_ = { 0,0,10 };
 	worldTransform_.Initialize();
 }
 
@@ -21,8 +23,6 @@ void Player::Update()
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
 		});
-	//旋回処理
-	Rotation();
 	//移動処理
 	Translation();
 	//攻撃処理
@@ -40,20 +40,10 @@ void Player::Update()
 	//行列の再計算(更新)
 	worldTransform_.TransferMatrix();
 
-	debugText_->SetPos(50, 50);
-	debugText_->Printf("Player:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("Rotation:(%f,%f,%f)", worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z);
-}
-
-void Player::Rotation()
-{
-
 }
 
 void Player::Translation()
 {
-
 	//キャラクターの移動ベクトル
 	Vector3 move = { 0,0,0 };
 	const float playerSpeed = 0.15f;
@@ -61,18 +51,19 @@ void Player::Translation()
 	//移動限界
 	const float moveLimitX = 13.0f;
 	const float moveLimitY = 7.0f;
+
 	//キャラの移動変化
-	if (input_->PushKey(DIK_LEFT)) {
-		move.x -= playerSpeed;
-	}
-	else if (input_->PushKey(DIK_RIGHT)) {
-		move.x += playerSpeed;
-	}
 	if (input_->PushKey(DIK_UP)) {
-		move.y += playerSpeed;
+		worldTransform_.parent_->translation_.z += playerSpeed;
 	}
 	else if (input_->PushKey(DIK_DOWN)) {
-		move.y -= playerSpeed;
+		worldTransform_.parent_->translation_.z -= playerSpeed;
+	}
+	if (input_->PushKey(DIK_RIGHT)) {
+		worldTransform_.parent_->translation_.x += playerSpeed;
+	}
+	else if (input_->PushKey(DIK_LEFT)) {
+		worldTransform_.parent_->translation_.x -= playerSpeed;
 	}
 
 	//加算
@@ -97,7 +88,7 @@ void Player::Attack()
 		velocity = BulletRot(velocity,worldTransform_.matWorld_);
 		//弾を生成,初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.matWorld_, velocity);
+		newBullet->Initialize(modelB_, worldTransform_.matWorld_, velocity);
 
 		// 弾を登録
 		bullets_.push_back(std::move(newBullet));
