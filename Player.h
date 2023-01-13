@@ -5,7 +5,6 @@
 #include "DebugText.h"
 #include "ViewProjection.h"
 #include <cassert>
-#include "PlayerBullet.h"
 #include <memory>
 #include <list>
 
@@ -42,11 +41,6 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 	void OnCollision();
-
-	//弾
-	std::list<std::unique_ptr<PlayerBullet>> bullets_;
-	//弾リストを取得
-	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();

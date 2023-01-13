@@ -19,18 +19,9 @@ void Player::Initialize(Model* model,Model* modelB)
 
 void Player::Update()
 {
-	//デスフラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
 	//移動処理
 	Translation();
-	//攻撃処理
-	Attack();
-	//弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
+
 	//行列計算
 	worldTransform_.matWorld_ = Scale(worldTransform_.scale_);
 	worldTransform_.matWorld_ *= Rot(worldTransform_.rotation_);
@@ -76,25 +67,6 @@ void Player::Translation()
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +moveLimitY);
 }
 
-void Player::Attack()
-{
-	if (input_->TriggerKey(DIK_SPACE)) {
-
-		// 弾の速度
-		const float kBulletSpeed = 0.05f;
-		Vector3 velocity(0, 0, kBulletSpeed);
-
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = BulletRot(velocity,worldTransform_.matWorld_);
-		//弾を生成,初期化
-		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(modelB_, worldTransform_.matWorld_, velocity);
-
-		// 弾を登録
-		bullets_.push_back(std::move(newBullet));
-	}
-}
-
 Vector3 Player::GetWorldPosition()
 {
 	Vector3 worldPos;
@@ -114,11 +86,6 @@ float Player::GetRadius()
 void Player::Draw(ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection);
-
-	//弾の描画
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
 }
 
 void Player::OnCollision()
